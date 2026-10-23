@@ -1,0 +1,1 @@
+Para evitar errores con comillas anidadas, se recomienda crear elementos con document.createElement() y agregar eventos con addEventListener().
