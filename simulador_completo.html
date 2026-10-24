@@ -1,255 +1,228 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CrediNova - Simulador de Créditos</title>
-    <link rel="stylesheet" href="estilos.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#172554">
+  <title>CrediNova | Sistema de Créditos</title>
+  <link rel="stylesheet" href="simulador.css">
 </head>
 <body>
+  <header class="topbar">
+    <div class="brand-mark" aria-hidden="true">CN</div>
+    <div class="brand-copy">
+      <p class="eyebrow">PANEL DE ADMINISTRACIÓN</p>
+      <h1>CrediNova</h1>
+      <p class="subtitle">Sistema básico de gestión de créditos</p>
+    </div>
+    <div class="topbar-chip">
+      <span class="status-dot"></span>
+      Sistema local
+    </div>
+  </header>
 
-    <header class="encabezado">
-        <div class="logo">💎 CrediNova</div>
-        <p>Tu futuro comienza con una buena decisión financiera</p>
-    </header>
+  <nav class="main-nav" aria-label="Navegación principal">
+    <button type="button" class="nav-button"
+      data-seccion="parametros"
+      onclick="mostrarSeccion('parametros')">
+      <span class="nav-icon" aria-hidden="true">⚙</span>
+      Parámetros
+    </button>
 
-    <nav class="menu">
-        <button onclick="mostrarSeccion('inicio')">Inicio</button>
-        <button onclick="mostrarSeccion('clientes')">Clientes</button>
-        <button onclick="mostrarSeccion('configuracion')">Configurar tasa</button>
-        <button onclick="mostrarSeccion('simulador')">Simular crédito</button>
-        <button onclick="mostrarSeccion('historial')">Créditos registrados</button>
-    </nav>
+    <button type="button" class="nav-button"
+      data-seccion="clientes"
+      onclick="mostrarSeccion('clientes')">
+      <span class="nav-icon" aria-hidden="true">♙</span>
+      Clientes
+    </button>
+  </nav>
 
-    <main class="contenedor">
+  <main class="page-content">
 
-        <!-- INICIO -->
-        <section id="inicio" class="seccion activa">
-            <div class="tarjeta bienvenida">
-                <h1>¡Bienvenido a CrediNova! ✨</h1>
-                <p>
-                    Administra clientes, configura la tasa de interés,
-                    simula cuotas y registra los créditos aprobados.
-                </p>
-                <button class="boton-principal" onclick="mostrarSeccion('simulador')">
-                    Comenzar simulación
-                </button>
+    <!-- PARÁMETROS -->
+    <section id="parametros" class="activa">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">CONFIGURACIÓN GENERAL</p>
+          <h2>Parámetros del crédito</h2>
+          <p class="section-description">
+            Define la tasa de interés que se utilizará como parámetro del sistema.
+          </p>
+        </div>
+        <div class="heading-icon" aria-hidden="true">%</div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-title-row">
+          <div class="mini-icon" aria-hidden="true">↗</div>
+          <div>
+            <h3>Tasa de interés</h3>
+            <p>El valor permitido debe estar entre 10% y 20%.</p>
+          </div>
+        </div>
+
+        <label for="tasaInteres">Tasa anual (%)</label>
+
+        <div class="rate-input-wrap">
+          <input
+            type="number"
+            id="tasaInteres"
+            name="tasaInteres"
+            min="10"
+            max="20"
+            step="0.1"
+            value="15"
+            inputmode="decimal">
+          <span>%</span>
+        </div>
+
+        <p class="field-hint">
+          Valor inicial: 15%. Puedes usar decimales.
+        </p>
+
+        <button type="button" class="button button-primary"
+          onclick="guardarTasa()">
+          <span aria-hidden="true">✓</span>
+          Guardar tasa
+        </button>
+
+        <p id="mensajeTasa" class="feedback"
+          role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- CLIENTES -->
+    <section id="clientes">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">BASE DE CLIENTES</p>
+          <h2>Administración de clientes</h2>
+          <p class="section-description">
+            Registra personas, consulta sus datos y actualiza su información cuando sea necesario.
+          </p>
+        </div>
+        <div class="heading-icon" aria-hidden="true">♙</div>
+      </div>
+
+      <div class="content-grid">
+
+        <!-- FORMULARIO -->
+        <div class="form-card">
+          <div class="card-title-row">
+            <div class="mini-icon" aria-hidden="true">＋</div>
+            <div>
+              <h3 id="tituloFormulario">Datos del cliente</h3>
+              <p>Completa todos los campos obligatorios.</p>
+            </div>
+          </div>
+
+          <form id="formularioCliente"
+            onsubmit="event.preventDefault(); guardarCliente();"
+            novalidate>
+
+            <div class="form-field">
+              <label for="cedula">Cédula</label>
+              <input type="text" id="cedula" name="cedula"
+                placeholder="Ej. 1712345678"
+                maxlength="10" minlength="10"
+                inputmode="numeric" autocomplete="off" required>
+              <small>Debe contener 10 dígitos.</small>
             </div>
 
-            <div class="resumen">
-                <div class="tarjeta estadistica">
-                    <span>👥</span>
-                    <h3>Clientes</h3>
-                    <p id="totalClientes">0</p>
-                </div>
-
-                <div class="tarjeta estadistica">
-                    <span>💰</span>
-                    <h3>Créditos registrados</h3>
-                    <p id="totalCreditos">0</p>
-                </div>
-
-                <div class="tarjeta estadistica">
-                    <span>📊</span>
-                    <h3>Tasa actual</h3>
-                    <p id="tasaActualInicio">15%</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- CLIENTES -->
-        <section id="clientes" class="seccion">
-            <div class="tarjeta">
-                <h2>👥 Administración de clientes</h2>
-                <p>Registra los datos personales de cada cliente.</p>
-
-                <form id="formCliente">
-                    <div class="grupo-formulario">
-                        <label for="cedula">Cédula:</label>
-                        <input type="text" id="cedula" maxlength="10"
-                               placeholder="Ingrese la cédula" required>
-                    </div>
-
-                    <div class="grupo-formulario">
-                        <label for="nombre">Nombre:</label>
-                        <input type="text" id="nombre"
-                               placeholder="Ingrese el nombre" required>
-                    </div>
-
-                    <div class="grupo-formulario">
-                        <label for="apellido">Apellido:</label>
-                        <input type="text" id="apellido"
-                               placeholder="Ingrese el apellido" required>
-                    </div>
-
-                    <div class="grupo-formulario">
-                        <label for="ingresos">Ingresos mensuales ($):</label>
-                        <input type="number" id="ingresos" min="0" step="0.01"
-                               placeholder="Ej. 800" required>
-                    </div>
-
-                    <div class="grupo-formulario">
-                        <label for="gastos">Gastos mensuales ($):</label>
-                        <input type="number" id="gastos" min="0" step="0.01"
-                               placeholder="Ej. 250" required>
-                    </div>
-
-                    <div class="botones">
-                        <button type="submit" class="boton-principal">Guardar cliente</button>
-                        <button type="button" class="boton-secundario"
-                                onclick="limpiarFormularioCliente()">Limpiar</button>
-                    </div>
-                </form>
-
-                <p id="mensajeCliente" class="mensaje"></p>
+            <div class="form-field">
+              <label for="nombre">Nombre</label>
+              <input type="text" id="nombre" name="nombre"
+                placeholder="Nombre del cliente"
+                autocomplete="given-name" required>
             </div>
 
-            <div class="tarjeta">
-                <h2>Clientes registrados</h2>
-
-                <div class="tabla-contenedor">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Cédula</th>
-                                <th>Nombre</th>
-                                <th>Apellido</th>
-                                <th>Ingresos</th>
-                                <th>Gastos</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaClientes"></tbody>
-                    </table>
-                </div>
+            <div class="form-field">
+              <label for="apellido">Apellido</label>
+              <input type="text" id="apellido" name="apellido"
+                placeholder="Apellido del cliente"
+                autocomplete="family-name" required>
             </div>
-        </section>
 
-        <!-- CONFIGURACIÓN DE TASA -->
-        <section id="configuracion" class="seccion">
-            <div class="tarjeta">
-                <h2>⚙️ Configuración de la tasa de interés</h2>
-                <p>La tasa permitida debe estar entre el 10% y el 20%.</p>
+            <div class="form-row">
+              <div class="form-field">
+                <label for="ingresos">Ingresos ($)</label>
+                <input type="number" id="ingresos" name="ingresos"
+                  placeholder="0.00" min="0" step="0.01"
+                  inputmode="decimal" required>
+              </div>
 
-                <div class="grupo-formulario">
-                    <label for="tasaInteres">Tasa de interés (%):</label>
-                    <input type="number" id="tasaInteres"
-                           min="10" max="20" value="15" step="0.5">
-                </div>
-
-                <button class="boton-principal" onclick="guardarTasa()">
-                    Guardar tasa
-                </button>
-
-                <p id="mensajeTasa" class="mensaje"></p>
-
-                <div class="aviso">
-                    <strong>Tasa configurada:</strong>
-                    <span id="tasaActual">15%</span>
-                </div>
+              <div class="form-field">
+                <label for="egresos">Egresos ($)</label>
+                <input type="number" id="egresos" name="egresos"
+                  placeholder="0.00" min="0" step="0.01"
+                  inputmode="decimal" required>
+              </div>
             </div>
-        </section>
 
-        <!-- SIMULADOR -->
-        <section id="simulador" class="seccion">
-            <div class="tarjeta">
-                <h2>💰 Simulador de crédito</h2>
-                <p>Selecciona un cliente y calcula una posible cuota mensual.</p>
+            <div class="form-actions">
+              <button type="submit" class="button button-primary"
+                id="btnGuardarCliente">
+                Guardar cliente
+              </button>
 
-                <div class="grupo-formulario">
-                    <label for="cedulaSimulacion">Cédula del cliente:</label>
-                    <input type="text" id="cedulaSimulacion"
-                           maxlength="10" placeholder="Ingrese la cédula">
-                </div>
-
-                <button class="boton-principal" onclick="buscarClienteSimulacion()">
-                    Buscar cliente
-                </button>
-
-                <div id="datosCliente" class="datos-cliente">
-                    <p>No se ha seleccionado ningún cliente.</p>
-                </div>
-
-                <div class="grupo-formulario">
-                    <label for="monto">Monto del crédito ($):</label>
-                    <input type="number" id="monto" min="1" step="0.01"
-                           placeholder="Ej. 1000">
-                </div>
-
-                <div class="grupo-formulario">
-                    <label for="plazo">Plazo (meses):</label>
-                    <input type="number" id="plazo" min="1" max="60"
-                           placeholder="Ej. 12">
-                </div>
-
-                <button class="boton-principal" onclick="calcularCredito()">
-                    Calcular crédito
-                </button>
-
-                <div id="resultadoCredito" class="resultado">
-                    <h3>Resultado de la simulación</h3>
-                    <p>Completa los datos para calcular la cuota.</p>
-                </div>
-
-                <button id="btnAsignarCredito" class="boton-asignar"
-                        onclick="asignarCredito()" disabled>
-                    Asignar crédito
-                </button>
-
-                <p id="mensajeAsignacion" class="mensaje"></p>
+              <button type="button" class="button button-secondary"
+                onclick="limpiar()">
+                Limpiar
+              </button>
             </div>
-        </section>
 
-        <!-- HISTORIAL -->
-        <section id="historial" class="seccion">
-            <div class="tarjeta">
-                <h2>📋 Créditos registrados</h2>
-                <p>Consulta los créditos asignados a los clientes.</p>
+            <p id="mensajeCliente" class="feedback"
+              role="status" aria-live="polite"></p>
+          </form>
+        </div>
 
-                <div class="buscador">
-                    <div class="grupo-formulario">
-                        <label for="cedulaBuscarCredito">Buscar por cédula:</label>
-                        <input type="text" id="cedulaBuscarCredito"
-                               maxlength="10" placeholder="Ingrese la cédula">
-                    </div>
-
-                    <button class="boton-principal" onclick="buscarCreditosCliente()">
-                        Buscar créditos
-                    </button>
-
-                    <button class="boton-secundario" onclick="pintarCreditos(creditos)">
-                        Mostrar todos
-                    </button>
-                </div>
-
-                <p id="mensajeHistorial" class="mensaje"></p>
-
-                <div class="tabla-contenedor">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Cédula</th>
-                                <th>Nombre</th>
-                                <th>Apellido</th>
-                                <th>Monto</th>
-                                <th>Tasa</th>
-                                <th>Plazo</th>
-                                <th>Cuota mensual</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaCreditos"></tbody>
-                    </table>
-                </div>
+        <!-- TABLA -->
+        <div class="table-card">
+          <div class="table-heading">
+            <div>
+              <h3>Clientes registrados</h3>
+              <p>Listado actualizado automáticamente.</p>
             </div>
-        </section>
+            <span class="count-pill" id="contadorClientes">
+              0 clientes
+            </span>
+          </div>
 
-    </main>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cédula</th>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Ingresos</th>
+                  <th>Egresos</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
 
-    <footer class="pie">
-        <p>© 2026 CrediNova | Simulador de créditos</p>
-    </footer>
+              <tbody id="tablaClientes">
+                <tr class="empty-row">
+                  <td colspan="6">
+                    Aún no hay clientes. Registra el primero usando el formulario.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-    <script src="utilitarios.js"></script>
-    <script src="script.js"></script>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>CrediNova</span>
+    <span>Gestión sencilla, decisiones claras.</span>
+  </footer>
+
+  <script src="utilitarios.js"></script>
+  <script src="simulador.js"></script>
 </body>
 </html>
